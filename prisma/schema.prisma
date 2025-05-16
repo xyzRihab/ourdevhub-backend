@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  firstName String?
+  lastName  String?
+  username  String    @unique
+  bio       String?
+  picture   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  tokens                Token[]
+  articles              Article[]
+  eventEngagements      EventEngagement[]
+  UserTag               UserTag[]
+  Like                  Like[]
+  Comment               Comment[]
+  Bookmark              Bookmark[]
+  receivedNotifications Notification[]    @relation("UserNotifications")
+  sentNotifications     Notification[]    @relation("UserSentNotifications")
+  mentionedInComments   Comment[]         @relation("CommentMentions")
+}
+
+model Token {
+  id         String    @id @default(cuid())
+  userId     String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  type       TokenType
+  emailToken String?   @unique
+  valid      Boolean   @default(true)
+  expiration DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum TokenType {
+  Email
+  API
+}
+
+model Article {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  fullContent String?
+  image       String
+  url         String?
+  authorId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  author       User?          @relation(fields: [authorId], references: [id])
+  ArticleTag   ArticleTag[]
+  Like         Like[]
+  Comment      Comment[]
+  Bookmark     Bookmark[]
+  Notification Notification[]
+}
+
+model Event {
+  id           String    @id @default(cuid())
+  title        String
+  content      String
+  image        String
+  eventDate    DateTime  @db.Timestamptz()
+  location     String
+  url          String?
+  maxAttendees Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  engagements EventEngagement[]
+  EventTag    EventTag[]
+}
+
+model EventEngagement {
+  userId    String
+  eventId   String
+  role      EventRole @default(Attendee)
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@id([userId, eventId])
+}
+
+enum EventRole {
+  Attendee
+  Author
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  count Int    @default(0)
+
+  UserTag    UserTag[]
+  ArticleTag ArticleTag[]
+  EventTag   EventTag[]
+}
+
+model UserTag {
+  userId String
+  tagId  String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tagId])
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+}
+
+model EventTag {
+  eventId String
+  tagId   String
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, tagId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  articleId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  article Article @relation(fields: [articleId], references: [id])
+
+  @@unique([userId, articleId])
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  content   String
+  userId    String
+  articleId String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  user         User           @relation(fields: [userId], references: [id])
+  article      Article        @relation(fields: [articleId], references: [id])
+  Notification Notification[]
+  mentions     User[]         @relation("CommentMentions")
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  articleId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  article Article @relation(fields: [articleId], references: [id])
+
+  @@unique([userId, articleId])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  senderId  String?
+  articleId String?
+  commentId String?
+  type      NotificationType
+  content   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user    User     @relation("UserNotifications", fields: [userId], references: [id])
+  sender  User?    @relation("UserSentNotifications", fields: [senderId], references: [id])
+  article Article? @relation(fields: [articleId], references: [id])
+  comment Comment? @relation(fields: [commentId], references: [id])
+}
+
+enum NotificationType {
+  Comment
+  Like
+  Event
+  System
+}
