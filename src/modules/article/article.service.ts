@@ -38,6 +38,13 @@ export class ArticleService {
       );
     }
 
+    if (!createArticleDto.image) {
+      throw new HttpException(
+        'You must provide an image.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const articleId = createId();
 
     const tags = await Promise.all(
