@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {
   HttpException,
   HttpStatus,
@@ -18,7 +17,16 @@ export class ElasticsearchService implements OnModuleInit {
   private readonly esClient: Client;
 
   constructor() {
-    this.esClient = new Client({ node: process.env.ELASTICSEARCH_URL });
+    this.esClient = new Client({
+      node: process.env.ELASTICSEARCH_URL,
+      auth: {
+        username: process.env.ELASTICSEARCH_USERNAME || 'elastic',
+        password: process.env.ELASTICSEARCH_PASSWORD || 'password',
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
   }
 
   async onModuleInit() {
