@@ -9,7 +9,7 @@
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:prod": "node --max-old-space-size=1024 dist/main.js",
+    "start:prod": "node --max-old-space-size=4096 dist/main.js",
     "seed": "ts-node prisma/seed.ts"
   },
   "prisma": {
