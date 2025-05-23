@@ -15,6 +15,7 @@ import { OpenaiModule } from './modules/openai/openai.module';
 import { SummarizeModule } from './modules/summarize/summarize.module';
 import { SearchModule } from './modules/search/search.module';
 import { PublicModule } from './modules/public/public.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { PublicModule } from './modules/public/public.module';
     SearchModule,
     PublicModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}
