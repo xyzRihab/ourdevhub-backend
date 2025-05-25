@@ -12,16 +12,13 @@ export class OpenaiController {
   }
 
   @Post('compare')
-  async compareTexts(
-    @Body() body: { text1: string; text2: string; threshold?: number },
-  ) {
-    const { text1, text2, threshold = 0.85 } = body;
+  async compareTexts(@Body() body: { text1: string; text2: string }) {
+    const { text1, text2 } = body;
     const [embed1, embed2] = await Promise.all([
       this.openaiService.generateEmbedding(text1),
       this.openaiService.generateEmbedding(text2),
     ]);
     const similarity = this.openaiService.cosineSimilarity(embed1, embed2);
-    const isSimilar = similarity >= threshold;
 
     return {
       data: similarity,

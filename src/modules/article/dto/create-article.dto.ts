@@ -11,6 +11,9 @@ export class CreateArticleDto {
   title: string;
 
   @IsString()
+  preview: string;
+
+  @IsString()
   content: string;
 
   @IsOptional()

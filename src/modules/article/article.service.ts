@@ -62,7 +62,8 @@ export class ArticleService {
       data: {
         id: articleId,
         title: createArticleDto.title,
-        content: createArticleDto.content,
+        content: createArticleDto.preview,
+        fullContent: createArticleDto.content,
         image: createArticleDto.image,
         url: createArticleDto.url,
         ...(userId && {
