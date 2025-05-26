@@ -46,8 +46,6 @@ export class NotificationService {
           return isMention
             ? `Mentioned you in a comment`
             : `Commented on your article`;
-        case NotificationType.System:
-          return `Sent a system notification`;
         default:
           return `${type}`;
       }
