@@ -78,7 +78,7 @@ export class AuthService {
     }
 
     const payload = { userId: user.id };
-    const options: JwtSignOptions = { expiresIn: '50min' };
+    const options: JwtSignOptions = { expiresIn: '30d' };
     const token = this.jwtService.sign(payload, options);
 
     return {
@@ -119,7 +119,7 @@ export class AuthService {
     });
 
     const payload = { userId: user.id };
-    const options: JwtSignOptions = { expiresIn: '50min' };
+    const options: JwtSignOptions = { expiresIn: '30d' };
     const token = this.jwtService.sign(payload, options);
 
     return {
