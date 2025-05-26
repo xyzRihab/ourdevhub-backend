@@ -162,7 +162,7 @@ export class ArticleService {
 
     const rawpineconeResults = await this.pineconeService.query(
       userEmbedding,
-      50,
+      100,
       'articles',
     );
 

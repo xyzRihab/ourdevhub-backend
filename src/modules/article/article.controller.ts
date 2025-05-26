@@ -37,8 +37,11 @@ export class ArticleController {
   }
 
   @Get('getRecommendedArticles')
-  getRecommendedArticles(@Request() req: { user: User }) {
-    return this.articleService.getRecommendedArticles(req.user.id);
+  getRecommendedArticles(
+    @Request() req: { user: User },
+    @Query('page') page: number,
+  ) {
+    return this.articleService.getRecommendedArticles(req.user.id, page);
   }
 
   @Get('getArticleByTag')
